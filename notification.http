@@ -1,0 +1,66 @@
+@spaceUrl = http://localhost:3001
+@membershipUrl = http://localhost:3002
+@bookingUrl = http://localhost:3004
+@notificationUrl = http://localhost:3007
+
+### 1. Sede (Space)
+# @name sede
+POST {{spaceUrl}}/locations
+Content-Type: application/json
+
+{ "name": "Sede Avisos", "city": "Montería", "address": "Calle 27 #4-15", "country": "CO", "currency": "COP" }
+
+### 2. Sala (Space)
+# @name sala
+POST {{spaceUrl}}/rooms
+Content-Type: application/json
+
+{ "locationId": "{{sede.response.body.id}}", "name": "Sala Sinú", "capacity": 6, "hourlyRate": 30000 }
+
+### 3. Miembro (Membership)
+# @name miembro
+POST {{membershipUrl}}/members
+Content-Type: application/json
+
+{ "name": "Camila Torres", "email": "camila-avisos@example.com" }
+
+### 4. Plan solo puestos (Membership)
+# @name plan
+POST {{membershipUrl}}/plans
+Content-Type: application/json
+
+{ "name": "Solo puestos Avisos", "price": 250000, "resourceAccess": ["DESK"] }
+
+### 5. Suscribir → avisos de membresía activa y factura
+# @name suscripcion
+POST {{membershipUrl}}/subscriptions
+Content-Type: application/json
+
+{ "memberId": "{{miembro.response.body.id}}", "planId": "{{plan.response.body.id}}" }
+
+### 6. Reservar sala fuera del plan → avisos de reserva y pago pendiente
+POST {{bookingUrl}}/bookings
+Content-Type: application/json
+
+{
+  "memberId": "{{miembro.response.body.id}}",
+  "resourceId": "{{sala.response.body.id}}",
+  "resourceType": "ROOM",
+  "startTime": "2026-12-15T14:00:00.000Z",
+  "endTime": "2026-12-15T16:00:00.000Z"
+}
+
+### 7. Avisos del miembro
+GET {{notificationUrl}}/notifications?memberId={{miembro.response.body.id}}
+
+### 8. Cuántos sin leer
+GET {{notificationUrl}}/notifications/unread-count?memberId={{miembro.response.body.id}}
+
+### 9. Marcar todos como leídos
+PATCH {{notificationUrl}}/notifications/read-all?memberId={{miembro.response.body.id}}
+
+### 10. Cancelar la suscripción → aviso de membresía finalizada
+PATCH {{membershipUrl}}/subscriptions/{{suscripcion.response.body.id}}/cancel
+
+### 11. Solo los no leídos (debe salir solo el de la cancelación)
+GET {{notificationUrl}}/notifications?memberId={{miembro.response.body.id}}&unread=true
