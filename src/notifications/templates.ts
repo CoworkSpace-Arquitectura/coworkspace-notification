@@ -69,6 +69,14 @@ export function buildNotification(event: string, data: EventData): NotificationD
         title: 'Pago no completado',
         message: `Tu pago de ${money(data.amount, data.currency)} no se completó: ${String(data.reason)}.`,
       };
+    case 'billing.charge.refunded':
+      return {
+        type: 'PAYMENT',
+        title: 'Reembolso realizado',
+        message: data.subscriptionId
+          ? `Te devolvimos ${money(data.amount, data.currency)} del plan por la garantía de 7 días. Puede tardar unos días en verse en tu tarjeta.`
+          : `Te devolvimos ${money(data.amount, data.currency)} por cancelar tu reserva a tiempo. Puede tardar unos días en verse en tu tarjeta.`,
+      };
     case 'billing.invoice.created':
       return {
         type: 'INVOICE',
