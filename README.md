@@ -7,3 +7,8 @@ Microservicio de avisos para los miembros. Escucha todos los eventos del sistema
 - **Endpoints:** `/notifications?memberId=`, `/notifications/unread-count`, `/notifications/read-all`, `/notifications/:id/read`
 - **Puerto local:** 3007
 - **Idempotencia:** cada evento genera como máximo un aviso (`event_key` único)
+
+## Documentación de la API
+
+- Swagger UI desplegado: https://coworkspace-notification.onrender.com/docs
+- En local: http://localhost:<PUERTO>/docs (el JSON OpenAPI está en `/docs-json`).
